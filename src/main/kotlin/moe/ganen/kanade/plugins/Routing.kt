@@ -1,30 +1,27 @@
 package moe.ganen.kanade.plugins
 
-import com.mongodb.client.model.Filters
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import moe.ganen.kanade.database.KanadeDb
-import moe.ganen.sekai.Music
 import moe.ganen.sekai.Sekai
 
 fun Application.configureRouting() {
-    val db = KanadeDb.dbInstance.getDatabase("musics")
-
     routing {
         get("/") {
             call.respond(HttpStatusCode.OK)
         }
 
         get("/musics") {
-            Sekai.fetchMusicsFromRemote(
-                onSuccess = {
-                    db.getCollection<Music>("musics").insertMany(it)
-                    call.respond(it)
-                },
-                onFailure = { call.respondText("error: ${it.localizedMessage}") }
-            )
+            val page = call.request.queryParameters["page"]?.toInt() ?: 1
+            val limit = call.request.queryParameters["limit"]?.toInt() ?: 10
+
+            Sekai.fetchMusicsFromRemote(onSuccess = {
+                KanadeDb.addMusics(it)
+            }, onFailure = { call.respondText("error: ${it.localizedMessage}") })
+
+            call.respond(KanadeDb.getMusics(page, limit))
         }
 
         get("music/{id}") {
@@ -34,11 +31,15 @@ fun Application.configureRouting() {
                 return@get
             }
 
-            val music = db.getCollection<Music>("musics").findOne(Filters.eq("id", requestedId))
-            if (music != null) {
-                call.respond(music)
-            } else {
-                call.respond(Throwable("Music not found"))
+            try {
+                val music = KanadeDb.getMusicById(requestedId.toInt())
+                if (music != null) {
+                    call.respond(music)
+                } else {
+                    call.respond(Throwable("Music not found"))
+                }
+            } catch (ex: Exception) {
+                call.respond(ex)
             }
         }
     }

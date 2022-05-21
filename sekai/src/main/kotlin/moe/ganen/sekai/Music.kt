@@ -15,9 +15,9 @@ data class Music(
     val dancerCount: Int,
     val selfDancerPosition: Int,
     @SerialName("assetbundleName")
-    val assetBundleName: String,
+    val assetBundleName: String?,
     @SerialName("liveTalkBackgroundAssetbundleName")
-    val liveTalkBackgroundAssetBundleName: String,
+    val liveTalkBackgroundAssetBundleName: String?,
     val publishedAt: Long,
     val liveStageId: Int,
     val fillerSec: Double
