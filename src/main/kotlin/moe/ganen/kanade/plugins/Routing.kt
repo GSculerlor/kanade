@@ -42,5 +42,12 @@ fun Application.configureRouting() {
                 call.respond(ex)
             }
         }
+
+        // TODO: 22/05/2022 Probably we don't need to expose this API at all since we will fetch last update via coroutines 
+        get("update") {
+            Sekai.fetchRemoteLastUpdate(onSuccess = {
+                call.respond(it)
+            }, onFailure = { call.respondText("error: ${it.localizedMessage}") })
+        }
     }
 }
