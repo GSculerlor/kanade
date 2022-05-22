@@ -5,7 +5,6 @@ import io.ktor.server.application.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import moe.ganen.kanade.database.KanadeDb
-import moe.ganen.sekai.Sekai
 
 fun Application.configureRouting() {
     routing {
@@ -16,10 +15,6 @@ fun Application.configureRouting() {
         get("/musics") {
             val page = call.request.queryParameters["page"]?.toInt() ?: 1
             val limit = call.request.queryParameters["limit"]?.toInt() ?: 10
-
-            Sekai.fetchMusicsFromRemote(onSuccess = {
-                KanadeDb.addMusics(it)
-            }, onFailure = { call.respondText("error: ${it.localizedMessage}") })
 
             call.respond(KanadeDb.getMusics(page, limit))
         }
@@ -43,11 +38,13 @@ fun Application.configureRouting() {
             }
         }
 
-        // TODO: 22/05/2022 Probably we don't need to expose this API at all since we will fetch last update via coroutines
-        get("update") {
-            Sekai.fetchRemoteLastUpdate(onSuccess = {
-                call.respond(it)
-            }, onFailure = { call.respondText("error: ${it.localizedMessage}") })
+        get("committer") {
+            val lastCommitter = KanadeDb.getLastCommitter()
+            if (lastCommitter == null) {
+                call.respondText("no last committer saved")
+            } else {
+                call.respond(lastCommitter)
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 package moe.ganen.kanade.database
 
 import com.mongodb.client.model.Filters
+import kotlinx.datetime.toInstant
 import moe.ganen.sekai.response.Committer
 import moe.ganen.sekai.response.Music
 import org.litote.kmongo.coroutine.coroutine
@@ -27,7 +28,11 @@ object KanadeDb {
         return database.getCollection<Music>("musics").findOne(Filters.eq("id", id))
     }
 
-    suspend fun compareLastUpdate(lastCommitter: Committer, onUpdate: () -> Unit) {
+    suspend fun getLastCommitter(): Committer? {
+        return database.getCollection<Committer>().findOne()
+    }
+
+    suspend fun compareLastUpdate(lastCommitter: Committer, onUpdate: suspend () -> Unit) {
         val collection = database.getCollection<Committer>()
         val lastClientUpdate = collection.findOne()
         // Client first time fetching the data
@@ -37,6 +42,20 @@ object KanadeDb {
             return
         }
 
+        try {
+            val localUpdateDate = lastClientUpdate.date.toInstant()
+            val lastCommitDate = lastCommitter.date.toInstant()
 
+            if (lastCommitDate > localUpdateDate) {
+                collection.apply {
+                    deleteOne(Filters.eq("date", lastClientUpdate.date))
+                    insertOne(lastCommitter)
+
+                    onUpdate()
+                }
+            }
+        } catch (ex: IllegalArgumentException) {
+            // do nothing if we failed to parse the date
+        }
     }
 }
