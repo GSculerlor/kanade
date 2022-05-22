@@ -12,12 +12,12 @@ data class CommitResponse(
 
 @kotlinx.serialization.Serializable
 data class Commit(
-    val author: GithubUser,
-    val committer: GithubUser
+    val author: Committer,
+    val committer: Committer
 )
 
 @kotlinx.serialization.Serializable
-data class GithubUser(
+data class Committer(
     val name: String,
     val email: String,
     val date: String
