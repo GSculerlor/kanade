@@ -1,5 +1,6 @@
 package moe.ganen.sekai
 
+import moe.ganen.sekai.response.Music
 object Sekai {
     suspend fun fetchMusicsFromRemote(
         onSuccess: suspend (List<Music>) -> Unit,

@@ -1,7 +1,7 @@
 package moe.ganen.kanade.database
 
 import com.mongodb.client.model.Filters
-import moe.ganen.sekai.Music
+import moe.ganen.sekai.response.Music
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
 

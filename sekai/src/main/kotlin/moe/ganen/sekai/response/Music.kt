@@ -1,6 +1,6 @@
-package moe.ganen.sekai
+package moe.ganen.sekai.response
 
-import kotlinx.serialization.SerialName
+import com.google.gson.annotations.SerializedName
 
 @kotlinx.serialization.Serializable
 data class Music(
@@ -14,10 +14,10 @@ data class Music(
     val arranger: String,
     val dancerCount: Int,
     val selfDancerPosition: Int,
-    @SerialName("assetbundleName")
-    val assetBundleName: String?,
-    @SerialName("liveTalkBackgroundAssetbundleName")
-    val liveTalkBackgroundAssetBundleName: String?,
+    @SerializedName("assetbundleName")
+    val assetBundleName: String,
+    @SerializedName("liveTalkBackgroundAssetbundleName")
+    val liveTalkBackgroundAssetBundleName: String,
     val publishedAt: Long,
     val liveStageId: Int,
     val fillerSec: Double
