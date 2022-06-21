@@ -21,6 +21,7 @@ object KanadeDb {
     suspend fun getMusics(page: Int = 1, limit: Int = 10): List<Music> {
         return database.getCollection<Music>("musics")
             .find()
+            .descendingSort(Music::id)
             .skip(skip = (page - 1) * limit)
             .limit(limit = limit)
             .partial(true)
