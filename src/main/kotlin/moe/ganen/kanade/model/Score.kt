@@ -9,5 +9,6 @@ data class Score(
     val great: Int = 0,
     val good: Int = 0,
     val bad: Int = 0,
-    val miss: Int = 0
+    val miss: Int = 0,
+    val submittedTime: Long = 0
 )

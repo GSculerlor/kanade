@@ -7,6 +7,7 @@ import moe.ganen.kanade.model.Score
 import moe.ganen.sekai.response.Committer
 import moe.ganen.sekai.response.Music
 import org.litote.kmongo.coroutine.coroutine
+import org.litote.kmongo.id.UUIDStringIdGenerator
 import org.litote.kmongo.reactivestreams.KMongo
 
 object KanadeDb {
@@ -62,8 +63,13 @@ object KanadeDb {
     }
 
     suspend fun addScore(score: Score) {
-        database.getCollection<Score>("scores").insertOne(score)
+        database.getCollection<Score>("scores")
+            .insertOne(
+                score.copy(
+                    id = UUIDStringIdGenerator.generateNewId<Score>().toString(),
                     submittedTime = Clock.System.now().epochSeconds
+                )
+            )
     }
 
     suspend fun getScoresBySongId(songId: Int, page: Int = 1, limit: Int = 3): List<Score> {
