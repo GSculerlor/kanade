@@ -1,2 +1,2 @@
-rootProject.name = "moe.ganen.kanade"
+rootProject.name = "kanade"
 include("sekai")
