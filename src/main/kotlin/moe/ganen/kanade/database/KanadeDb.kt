@@ -1,6 +1,7 @@
 package moe.ganen.kanade.database
 
 import com.mongodb.client.model.Filters
+import kotlinx.datetime.Clock
 import kotlinx.datetime.toInstant
 import moe.ganen.kanade.model.Score
 import moe.ganen.sekai.response.Committer
@@ -62,11 +63,13 @@ object KanadeDb {
 
     suspend fun addScore(score: Score) {
         database.getCollection<Score>("scores").insertOne(score)
+                    submittedTime = Clock.System.now().epochSeconds
     }
 
     suspend fun getScoresBySongId(songId: Int, page: Int = 1, limit: Int = 3): List<Score> {
         return database.getCollection<Score>("scores")
             .find(Filters.eq("songId", songId))
+            .descendingSort(Score::submittedTime)
             .skip(skip = (page - 1) * limit)
             .limit(limit = limit)
             .partial(true)
