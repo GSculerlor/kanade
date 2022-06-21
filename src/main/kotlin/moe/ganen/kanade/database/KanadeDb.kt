@@ -2,6 +2,7 @@ package moe.ganen.kanade.database
 
 import com.mongodb.client.model.Filters
 import kotlinx.datetime.toInstant
+import moe.ganen.kanade.model.Score
 import moe.ganen.sekai.response.Committer
 import moe.ganen.sekai.response.Music
 import org.litote.kmongo.coroutine.coroutine
@@ -57,5 +58,18 @@ object KanadeDb {
         } catch (ex: IllegalArgumentException) {
             // do nothing if we failed to parse the date
         }
+    }
+
+    suspend fun addScore(score: Score) {
+        database.getCollection<Score>("scores").insertOne(score)
+    }
+
+    suspend fun getScoresBySongId(songId: Int, page: Int = 1, limit: Int = 3): List<Score> {
+        return database.getCollection<Score>("scores")
+            .find(Filters.eq("songId", songId))
+            .skip(skip = (page - 1) * limit)
+            .limit(limit = limit)
+            .partial(true)
+            .toList()
     }
 }
