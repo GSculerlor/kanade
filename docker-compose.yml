@@ -1,6 +1,6 @@
-version: '1'
+version: '3.3'
 services:
-  mongo:
+  mongodb:
     image: mongo:latest
     ports:
       - "27017:27017"
